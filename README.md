@@ -1,16 +1,23 @@
 # fastapi-slackbot
 
- To run the app, run:
- 
- ```bash
- uvicorn main:app --reload
- ```
+## Setup
 
- Access the app at: 
+```bash
+poetry init 
+poetry add fastapi uvicorn
+poetry shell
+```
+
+## Run the app
+ 
+```bash
+uvicorn main:app --reload
+```
+
+## Access the app
 
  http://127.0.0.1:8000/
 
- Or Swagger UI:
+## Swagger UI:
 
  http://127.0.0.1:8000/docs#/default/main_route__get
- 
