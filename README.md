@@ -35,3 +35,9 @@ poetry add fastapi uvicorn python-dotenv slack-bolt pika
 ```bash
 ngrok http 8000
 ```
+
+## Run:
+
+```bash
+poetry run uvicorn main:app --reload
+```
