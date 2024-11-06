@@ -21,3 +21,17 @@ uvicorn main:app --reload
 ## Swagger UI:
 
  http://127.0.0.1:8000/docs#/
+
+# Slackbot
+
+## Dependencies
+
+```bash
+poetry add fastapi uvicorn python-dotenv slack-bolt pika
+```
+
+## ngrok
+
+```bash
+ngrok http 8000
+```
