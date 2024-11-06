@@ -34,8 +34,7 @@ def callback(ch, method, properties, body):
     thread_ts = body.get("thread_ts")
     
     # Generate ChatGPT response to user prompt
-    chatgpt_response = "Here's a code recommendation for your prompt: " + \
-        chatgpt_prompt + " (" + str(hash(chatgpt_prompt)) + ")"
+    chatgpt_response = "Here's a code recommendation for your prompt: " + chatgpt_prompt
 
     # Send code recommendation to Slack
     post_response_to_slack(
