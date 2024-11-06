@@ -20,4 +20,4 @@ uvicorn main:app --reload
 
 ## Swagger UI:
 
- http://127.0.0.1:8000/docs#/default/main_route__get
+ http://127.0.0.1:8000/docs#/
