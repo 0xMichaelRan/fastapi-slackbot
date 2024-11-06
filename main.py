@@ -1,7 +1,18 @@
-from fastapi import FastAPI  
-app = FastAPI()   
-@app.get("/") 
-async def main_route():     
-  return {"message": "Hey, this is 0xMichaelRanr"}
+from fastapi import Body, FastAPI, Request, Response
 
-# Reference: https://medium.com/@caetanoog/start-your-first-fastapi-server-with-poetry-in-10-minutes-fef90e9604d9
+app = FastAPI()
+
+
+@app.get("/")
+async def main_route():
+    return {"message": "Hey, this is 0xMichaelRanr"}
+
+
+@app.post("/echo")
+async def echo(request: Request, response: Response, data=Body(...)):
+    raw_body = await request.body()
+    body = raw_body.decode("utf-8")
+
+    print(data)
+
+    return {"data": data, "raw_body": body, "headers": request.headers}
