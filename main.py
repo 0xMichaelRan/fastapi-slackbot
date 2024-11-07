@@ -61,11 +61,12 @@ def create_app() -> FastAPI:
             else:
                 logger.error(error_msg)
 
-    # Slack event handlers
+    # invoked whenever our bot is mentioned on Slack
     @slack_app.event("app_mention")
     def handle_app_mention(event: Dict[str, Any], say: Any) -> None:
         process_slack_event(event, say)
 
+    # invoked whenever a message is posted in any of the channels our bot has been added to
     @slack_app.event("message")
     def handle_message_events(body: Dict[str, Any], logger: Any) -> None:
         process_slack_event(body["event"], logger.error)
