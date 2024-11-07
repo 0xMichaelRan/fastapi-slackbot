@@ -47,9 +47,9 @@ def callback(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def start_consumer():
-    url = os.environ.get('CLOUDAMQP_URL')
+    url = os.environ.get('RABBITMQ_URL')
     if not url:
-        logger.error("CLOUDAMQP_URL not found in environment variables")
+        logger.error("RABBITMQ_URL not found in environment variables")
         return
 
     params = pika.URLParameters(url)
