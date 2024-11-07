@@ -11,8 +11,27 @@ from broker import producer
 from broker.consumer import start_consumer
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Get the main logger
 logger = logging.getLogger(__name__)
+
+# Configure module-specific logging levels
+LOGGING_CONFIG = {
+    "pika": logging.WARNING,
+    "pika.heartbeat": logging.INFO,
+    "pika.adapters": logging.WARNING,
+    "pika.connection": logging.INFO,
+    "pika.channel": logging.INFO,
+    "broker": logging.INFO, 
+}
+
+# Apply logging configuration
+for logger_name, level in LOGGING_CONFIG.items():
+    logging.getLogger(logger_name).setLevel(level)
 
 # Load environment variables
 load_dotenv()
