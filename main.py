@@ -5,66 +5,30 @@ from dotenv import load_dotenv
 import os
 import threading
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 
 from broker import producer
 from broker.consumer import start_consumer
+from config.logging_config import setup_logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-
-# Get the main logger
-logger = logging.getLogger(__name__)
-
-# Configure module-specific logging levels
-LOGGING_CONFIG = {
-    "pika": logging.WARNING,
-    "pika.heartbeat": logging.INFO,
-    "pika.adapters": logging.WARNING,
-    "pika.connection": logging.INFO,
-    "pika.channel": logging.INFO,
-    "broker": logging.INFO, 
-}
-
-# Apply logging configuration
-for logger_name, level in LOGGING_CONFIG.items():
-    logging.getLogger(logger_name).setLevel(level)
+# Setup logging
+logger = setup_logging()
 
 # Load environment variables
 load_dotenv()
 
 
-def create_app() -> FastAPI:
-    """Create and configure FastAPI application"""
-    app = FastAPI(title="Slack Bot API")
+class SlackEventProcessor:
+    """Handle Slack event processing and message publishing"""
 
-    # Initialize Slack app
-    slack_app = App(
-        token=os.environ.get("SLACK_BOT_TOKEN"),
-        signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
-    )
-
-    handler = SlackRequestHandler(slack_app)
-
-    # FastAPI routes
-    @app.get("/")
-    async def main_route():
-        return {"message": "Hey, It is Wei"}
-
-    @app.post("/slack/events")
-    async def slack_events(request: Request):
-        return await handler.handle(request)
-
-    def process_slack_event(event: Dict[str, Any], response_handler: Any) -> None:
+    @staticmethod
+    def process_event(event: Dict[str, Any], response_handler: Callable) -> None:
         """
         Process Slack events and publish messages to queue
 
         Args:
             event: Slack event data
-            response_handler: Function to handle error responses (say or logger.error)
+            response_handler: Function to handle error responses
         """
         message_body = {
             "prompt": event["text"],
@@ -80,19 +44,51 @@ def create_app() -> FastAPI:
             else:
                 logger.error(error_msg)
 
-    # invoked whenever our bot is mentioned on Slack
-    @slack_app.event("app_mention")
-    def handle_app_mention(event: Dict[str, Any], say: Any) -> None:
-        process_slack_event(event, say)
 
-    # invoked whenever a message is posted in any of the channels our bot has been added to
+def create_slack_app() -> App:
+    """Create and configure Slack app"""
+    return App(
+        token=os.environ.get("SLACK_BOT_TOKEN"),
+        signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
+    )
+
+
+def create_app() -> FastAPI:
+    """Create and configure FastAPI application"""
+    app = FastAPI(
+        title="Slack Bot API",
+        description="A FastAPI application for handling Slack events",
+        version="1.0.0",
+    )
+
+    # Initialize Slack app and handler
+    slack_app = create_slack_app()
+    handler = SlackRequestHandler(slack_app)
+    processor = SlackEventProcessor()
+
+    @app.get("/")
+    async def health_check():
+        """Health check endpoint"""
+        return {"status": "healthy", "message": "Hey, It is 0xMichaelRan"}
+
+    @app.post("/slack/events")
+    async def slack_events(request: Request):
+        """Handle incoming Slack events"""
+        return await handler.handle(request)
+
+    @slack_app.event("app_mention")
+    def handle_app_mention(event: Dict[str, Any], say: Callable) -> None:
+        """Handle mentions of the bot in Slack"""
+        processor.process_event(event, say)
+
     @slack_app.event("message")
     def handle_message_events(body: Dict[str, Any], logger: Any) -> None:
-        process_slack_event(body["event"], logger.error)
+        """Handle messages in channels where the bot is present"""
+        processor.process_event(body["event"], logger.error)
 
-    # Start consumer thread on startup
     @app.on_event("startup")
     def startup_event():
+        """Start the RabbitMQ consumer thread when the application starts"""
         consumer_thread = threading.Thread(
             target=start_consumer, daemon=True, name="RabbitMQ-Consumer"
         )
