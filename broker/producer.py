@@ -13,9 +13,9 @@ def publish_message(message_body: dict) -> bool:
     Publishes a message to RabbitMQ with error handling
     Returns: bool indicating success/failure
     """
-    url = os.environ.get('CLOUDAMQP_URL')
+    url = os.environ.get('RABBITMQ_URL')
     if not url:
-        logger.error("CLOUDAMQP_URL not found in environment variables")
+        logger.error("RABBITMQ_URL not found in environment variables")
         return False
 
     try:
