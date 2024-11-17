@@ -89,11 +89,16 @@ def create_app() -> FastAPI:
     @app.on_event("startup")
     def startup_event():
         """Start the RabbitMQ consumer thread when the application starts"""
-        consumer_thread = threading.Thread(
-            target=start_consumer, daemon=True, name="RabbitMQ-Consumer"
-        )
-        consumer_thread.start()
-        logger.info("RabbitMQ consumer thread started")
+        try:
+            consumer_thread = threading.Thread(
+                target=start_consumer, daemon=True, name="RabbitMQ-Consumer"
+            )
+            consumer_thread.start()
+            logger.info("RabbitMQ consumer thread started")
+        except Exception as e:
+            logger.error(f"Failed to start RabbitMQ consumer: {str(e)}")
+            # Optionally, you might want to raise the error to prevent app startup
+            # raise RuntimeError(f"Failed to initialize RabbitMQ consumer: {str(e)}")
 
     return app
 

@@ -1,10 +1,10 @@
 # fastapi-slackbot
 
-## Setup
+## Setup poetry
 
 ```bash
 poetry init 
-poetry add fastapi uvicorn
+poetry add fastapi uvicorn python-dotenv slack-bolt pika
 poetry shell
 ```
 
@@ -22,22 +22,20 @@ uvicorn main:app --reload
 
  http://127.0.0.1:8000/docs#/
 
-# Slackbot
-
-## Dependencies
-
-```bash
-poetry add fastapi uvicorn python-dotenv slack-bolt pika
-```
+# Slack Setup
 
 ## ngrok
+
+Setup ngrok following the instructions [here](https://dashboard.ngrok.com/get-started/setup/macos/).
+
+Then expose port 8000 using ngrok:
 
 ```bash
 ngrok http 8000
 ```
 
-## Run:
+You will get a URL like `https://<random>.ngrok.app`. Append `/slack/events` to the URL, it becomes something like `https://<random>.ngrok.app/slack/events`.
 
-```bash
-poetry run uvicorn main:app --reload
-```
+Now, go to Slackbot's "Event Subscriptions" and paste into "Request URL" field.
+
+Done!
