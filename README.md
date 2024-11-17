@@ -38,4 +38,4 @@ You will get a URL like `https://<random>.ngrok.app`. Append `/slack/events` to 
 
 Now, go to Slackbot's "Event Subscriptions" and paste into "Request URL" field.
 
-Done!
+Done! If are not sure the URL, check it out at https://dashboard.ngrok.com/agents
