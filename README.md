@@ -34,7 +34,7 @@ Then expose port 8000 using ngrok:
 ngrok http 8000
 ```
 
-You will get a URL like `https://<random>.ngrok.app`. Append `/slack/events` to the URL, it becomes something like `https://<random>.ngrok.app/slack/events`.
+You will get a URL like `https://<random>.ngrok.app`. Append `/slack/events` to the URL, it becomes something like `https://3fc4-134-238-32-82.ngrok-free.app/slack/events`. You do not need this URL in your code. 
 
 Now, go to Slackbot's "Event Subscriptions" and paste into "Request URL" field.
 
