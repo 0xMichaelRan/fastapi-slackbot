@@ -3,7 +3,8 @@
 ## Setup poetry
 
 ```bash
-poetry init 
+poetry new projectname-backend-fastapi
+cd projectname-backend-fastapi
 poetry add fastapi uvicorn python-dotenv slack-bolt pika
 poetry shell
 ```
